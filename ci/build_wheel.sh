@@ -3,8 +3,8 @@
 
 set -euo pipefail
 
-package_name=$ucx
-package_dir=$python/libucx
+package_name="ucx"
+package_dir="python/libucx"
 pyproject_file="${package_dir}/pyproject.toml"
 
 source rapids-configure-sccache
