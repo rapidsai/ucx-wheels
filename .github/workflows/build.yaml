@@ -1,0 +1,56 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - v[0-9].[0-9][0-9].[0-9][0-9]
+  workflow_dispatch:
+    inputs:
+      branch:
+        required: true
+        type: string
+      date:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+      build_type:
+        type: string
+        default: nightly
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+# TODO: I would love to not need RAPIDS shared workflows for these builds, but
+# for getting things stood up quickly that's the fastest route.
+jobs:
+  wheel-build-ucx:
+    secrets: inherit
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-build.yaml@branch-24.06
+    with:
+      build_type: ${{ inputs.build_type || 'branch' }}
+      branch: ${{ inputs.branch }}
+      sha: ${{ inputs.sha }}
+      date: ${{ inputs.date }}
+      script: ci/build_wheel.sh
+  wheel-tests-ucx:
+    needs: wheel-build-ucx
+    secrets: inherit
+    uses: rapidsai/shared-workflows/.github/workflows/wheels-test.yaml@branch-24.06
+    with:
+      build_type: pull-request
+      script: ci/test_wheel.sh
+  #wheel-publish-ucx:
+  #  needs: wheel-build-ucx
+  #  secrets: inherit
+  #  uses: rapidsai/shared-workflows/.github/workflows/wheels-publish.yaml@branch-24.06
+  #  with:
+  #    build_type: ${{ inputs.build_type || 'branch' }}
+  #    branch: ${{ inputs.branch }}
+  #    sha: ${{ inputs.sha }}
+  #    date: ${{ inputs.date }}
+  #    package-name: ucx
