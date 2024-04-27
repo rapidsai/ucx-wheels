@@ -29,5 +29,8 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/openucx/ucx"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}
