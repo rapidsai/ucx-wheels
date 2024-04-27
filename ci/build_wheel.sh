@@ -16,4 +16,4 @@ sed -i -E "s/^name = \"${package_name}(.*)?\"$/name = \"${package_name}${PACKAGE
 
 python -m pip wheel "${package_dir}"/ -w "${package_dir}"/dist -vvv --no-deps --disable-pip-version-check
 python -m auditwheel repair -w ${package_dir}/final_dist ${package_dir}/dist/*
-RAPIDS_PY_WHEEL_NAME="ucx_${RAPIDS_PY_CUDA_SUFFIX}" rapids-upload-wheels-to-s3 ${package_dir}/final_dist
+RAPIDS_PY_WHEEL_NAME="ucx_${RAPIDS_PY_CUDA_SUFFIX}" rapids-upload-wheels-to-s3 cpp ${package_dir}/final_dist
