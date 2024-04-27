@@ -39,7 +39,6 @@ jobs:
       date: ${{ inputs.date }}
       script: ci/build_wheel.sh
   wheel-tests-ucx:
-    matrix_filter: group_by([.ARCH, (.CUDA_VER|split(".")|map(tonumber)|.[0])]) | map(max_by(.PY_VER|split(".")|map(tonumber)))
     needs: wheel-build-ucx
     secrets: inherit
     uses: rapidsai/shared-workflows/.github/workflows/wheels-test.yaml@branch-24.06
