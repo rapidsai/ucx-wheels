@@ -1,0 +1,33 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools>=64.0.0",
+    "wheel",
+]
+
+[project]
+name = "libucx"
+dynamic = ["version"]
+description = "The Unified Communication X library (UCX)"
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [
+    { name = "NVIDIA Corporation" },
+]
+license = { text = "BSD-3-Clause" }
+# Note: We can probably relax this, but it's not critical for now.
+requires-python = ">=3.9"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C++",
+    "Topic :: System :: Hardware",
+    "Topic :: System :: Systems Administration",
+]
+
+[project.urls]
+Homepage = "https://github.com/openucx/ucx"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
