@@ -42,6 +42,10 @@ class build_py(build_orig):
                                     "--with-cuda=/usr/local/cuda"])
                     subprocess.run(["make", "-j"], env={**os.environ, "CPPFLAGS": "-I/usr/local/cuda/include"})
                     subprocess.run(["make", "install"])
+                    # The config file built into UCX is not relocatable. We need to fix
+                    # that so that we can package up UCX and distribute it in a wheel.
+                    subprocess.run(["sed", "-i" "'s/^set(prefix.*/set(prefix \"${CMAKE_CURRENT_LIST_DIR}\/..\/..\/..\")/'", f"{install_prefix}/lib/cmake/ucx/ucx-targets.cmake"])
+
 
 
 setup(
