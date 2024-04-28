@@ -28,6 +28,23 @@ UCX_LIBRARIES = [
 ]
 
 def load_library():
+    # First validate if libcuda.so and libnvidia-ml.so are present. These cannot be
+    # bundled, so we want to provide the user with a reasonable error if they are not
+    # available rather than a loader error on import.
+    try:
+        ctypes.CDLL("libcuda.so.1", ctypes.RTLD_GLOBAL)
+    except OSError:
+        raise RuntimeError("The CUDA driver library libcuda.so.1 was not found "
+                      "on your system. This library cannot be provided by the libucx "
+                      "wheel and must be installed separately.")
+
+    try:
+        ctypes.CDLL("libnvidia-ml.so.1", ctypes.RTLD_GLOBAL)
+    except OSError:
+        raise RuntimeError("The library libnvidia-ml.so.1 was not found on your "
+                      "system. This library cannot be provided by the libucx wheel and "
+                      "must be installed separately.")
+
     # Dynamically load libucx.so. Prefer a system library if one is present to
     # avoid clobbering symbols that other packages might expect, but if no
     # other library is present use the one in the wheel.
