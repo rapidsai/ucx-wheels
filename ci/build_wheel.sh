@@ -19,5 +19,5 @@ python -m pip wheel "${package_dir}"/ -w "${package_dir}"/dist -vvv --no-deps --
 # We must avoid bundling libcuda.so. What about libnvidia-ml.so? We had long
 # discussions about this in the past, and at the time we settled on excluding
 # it since we were going to be non-compliant without libcuda.so anyway.
-python -m auditwheel repair -w ${package_dir}/final_dist --exclude "libcuda.so" --exclude "libnvidia-ml.so.1" ${package_dir}/dist/*
+python -m auditwheel repair -w ${package_dir}/final_dist --exclude "libcuda.so.1" --exclude "libnvidia-ml.so.1" ${package_dir}/dist/*
 RAPIDS_PY_WHEEL_NAME="ucx_${RAPIDS_PY_CUDA_SUFFIX}" rapids-upload-wheels-to-s3 cpp ${package_dir}/final_dist
