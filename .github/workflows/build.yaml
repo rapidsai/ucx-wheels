@@ -38,13 +38,6 @@ jobs:
       sha: ${{ inputs.sha }}
       date: ${{ inputs.date }}
       script: ci/build_wheel.sh
-  wheel-tests-ucx:
-    needs: wheel-build-ucx
-    secrets: inherit
-    uses: rapidsai/shared-workflows/.github/workflows/wheels-test.yaml@branch-24.06
-    with:
-      build_type: pull-request
-      script: ci/test_wheel.sh
   #wheel-publish-ucx:
   #  needs: wheel-build-ucx
   #  secrets: inherit
