@@ -44,7 +44,9 @@ class build_py(build_orig):
                     subprocess.run(["make", "install"])
                     # The config file built into UCX is not relocatable. We need to fix
                     # that so that we can package up UCX and distribute it in a wheel.
-                    subprocess.run(["sed", "-i" "'s/^set(prefix.*/set(prefix \"${CMAKE_CURRENT_LIST_DIR}\/..\/..\/..\")/'", f"{install_prefix}/lib/cmake/ucx/ucx-targets.cmake"])
+                    cmd = ["sed", "-i", r"'s/^set(prefix.*/set(prefix \"${CMAKE_CURRENT_LIST_DIR}\/..\/..\/..\")/'"]
+                    print("Running", " ".join(cmd))
+                    subprocess.run(cmd)
 
 
 
