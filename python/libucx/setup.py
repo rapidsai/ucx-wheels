@@ -64,7 +64,17 @@ class build_py(build_orig):
                                 fn,
                             ]
                         )
-
+                    # The transport layers must be able to find the main UCX
+                    for fn in glob.glob(f"{install_prefix}/lib/ucx*.so*"):
+                        subprocess.run(
+                            [
+                                "patchelf",
+                                "--add-rpath",
+                                "$ORIGIN/..",
+                                "--force-rpath",
+                                fn,
+                            ]
+                        )
 
 
 setup(
