@@ -4,6 +4,7 @@ import subprocess
 from contextlib import contextmanager
 import os
 import tempfile
+import glob
 
 
 @contextmanager
@@ -52,6 +53,17 @@ class build_py(build_orig):
                             f"{install_prefix}/lib/cmake/ucx/ucx-targets.cmake"
                         ]
                     )
+                    # The UCX libraries must be able to find each other as dependencies.
+                    for fn in glob.glob(f"{install_prefix}/lib/*.so*"):
+                        subprocess.run(
+                            [
+                                "patchelf",
+                                "--add-rpath",
+                                "$ORIGIN",
+                                "--force-rpath",
+                                fn,
+                            ]
+                        )
 
 
 

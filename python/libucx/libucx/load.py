@@ -18,7 +18,9 @@ import os
 
 
 # IMPORTANT: The load order here matters! libucm.so depends on symbols in the other
-# libraries being loaded first, but does not express this via a DT_NEEDED entry.
+# libraries being loaded first, but does not express this via a DT_NEEDED entry. The
+# others can all be loaded in any order since they do state their dependencies and they
+# all have $ORIGIN RPATHs to find each other.
 UCX_LIBRARIES = [
     "libucp.so",
     "libuct.so",
