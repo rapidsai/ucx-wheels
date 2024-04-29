@@ -64,7 +64,11 @@ class build_py(build_orig):
                                 fn,
                             ]
                         )
-                    # The transport layers must be able to find the main UCX
+                    # The transport layers must be able to find the main UCX. Note that
+                    # this is not strictly necessary because the layers should only ever
+                    # be dlopened by libuct.so (at which point all the dependencies of
+                    # the layers are already loaded), but there's no real harm in making
+                    # this linkage explicit here since the layout is fixed.
                     for fn in glob.glob(f"{install_prefix}/lib/ucx*.so*"):
                         subprocess.run(
                             [
