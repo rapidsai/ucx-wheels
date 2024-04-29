@@ -32,7 +32,7 @@ jobs:
           "
 
           MATRIX="$(
-            yq -n -o json 'env(MATRIX)' | \
+            yq -n -o json 'env(MATRIX)'
           )"
 
           echo "MATRIX=${MATRIX}" | tee --append "${GITHUB_OUTPUT}"
