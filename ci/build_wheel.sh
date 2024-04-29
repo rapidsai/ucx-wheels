@@ -7,6 +7,9 @@ package_name="libucx"
 package_dir="python/libucx"
 pyproject_file="${package_dir}/pyproject.toml"
 
+source rapids-configure-sccache
+source rapids-date-string
+
 RAPIDS_PY_CUDA_SUFFIX="$(rapids-wheel-ctk-name-gen ${RAPIDS_CUDA_VERSION})"
 PACKAGE_CUDA_SUFFIX="-${RAPIDS_PY_CUDA_SUFFIX}"
 sed -i -E "s/^name = \"${package_name}(.*)?\"$/name = \"${package_name}${PACKAGE_CUDA_SUFFIX}\"/g" ${pyproject_file}
