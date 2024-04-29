@@ -75,6 +75,9 @@ jobs:
         run: ci/build_wheel.sh
         env:
           GH_TOKEN: ${{ github.token }}
+          # TODO: When we generalize this workflow to support both publishing
+          # builds and PRs we need to set this variable accordingly.
+          RAPIDS_BUILD_TYPE: "pull-request"
         # Use a shell that loads the rc file so that we get the compiler settings
         shell: bash -leo pipefail {0}
   compute-test-matrix:
