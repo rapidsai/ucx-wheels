@@ -42,7 +42,7 @@ jobs:
     needs: compute-build-matrix
     strategy:
       matrix: ${{ fromJSON(needs.compute-build-matrix.outputs.MATRIX) }}
-    runs-on: "linux-${{ matrix.ARCH }}-${{ inputs.node_type }}"
+    runs-on: "linux-${{ matrix.ARCH }}-cpu16"
     env:
       RAPIDS_ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
     container:
