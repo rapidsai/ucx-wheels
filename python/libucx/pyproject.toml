@@ -26,6 +26,9 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 
+[project.entry-points."cmake.prefix"]
+libucx = "libucx"
+
 [project.urls]
 Homepage = "https://github.com/openucx/ucx"
 

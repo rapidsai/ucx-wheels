@@ -17,14 +17,20 @@ import ctypes
 import os
 
 
-# IMPORTANT: The load order here matters! libucm.so depends on symbols in the other
-# libraries being loaded first, but does not express this via a DT_NEEDED entry.
+# IMPORTANT: The load order here matters! libucm.so depends on symbols in libucs.so, but
+# it does not express this via a DT_NEEDED entry, presumably because libucs.so also has
+# a dependency on libucm.so and the libraries are attempting to avoid a circular
+# dependency. Moreover, it seems like if libucs.so is not loaded before libuct.so and
+# libucp.so something is set up incorrectly, perhaps with the atexit handlers, because
+# on library close there is a double free issue. Therefore, libucs.so must be loaded
+# first. The other libraries may then be loaded in any order. The libraries themselves
+# all have $ORIGIN RPATHs to find each other.
 UCX_LIBRARIES = [
-    "libucp.so",
-    "libuct.so",
     "libucs.so",
     "libucs_signal.so",
     "libucm.so",
+    "libuct.so",
+    "libucp.so",
 ]
 
 def load_library():
