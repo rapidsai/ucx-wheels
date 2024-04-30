@@ -84,6 +84,7 @@ jobs:
       - name: Build and repair the wheel
         run: ci/build_wheel.sh
         env:
+          GH_TOKEN: ${{ github.token }}
           # TODO: When we generalize this workflow to support both publishing
           # builds and PRs we need to set this variable accordingly.
           RAPIDS_BUILD_TYPE: "pull-request"
@@ -161,6 +162,7 @@ jobs:
     - name: Run tests
       run: ci/test_wheel.sh
       env:
+        GH_TOKEN: ${{ github.token }}
         # TODO: When we generalize this workflow to support both publishing
         # builds and PRs we need to set this variable accordingly.
         RAPIDS_BUILD_TYPE: "pull-request"
