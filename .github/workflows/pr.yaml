@@ -70,17 +70,18 @@ jobs:
       - name: checkout code repo
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.sha }}
           persist-credentials: false
-
+      - name: Get current date
+        id: date
+        run: |
+          echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
       - name: Standardize repository information
         uses: rapidsai/shared-actions/rapids-github-info@main
         with:
-          repo: ${{ inputs.repo }}
-          branch: ${{ inputs.branch }}
-          date: ${{ inputs.date }}
-          sha: ${{ inputs.sha }}
-
+          repo: ${{ github.repository }}
+          branch: ${{ github.ref_name }}
+          date: ${{ steps.date.outputs.date }}
+          sha: ${{ github.ref_name }}
       - name: Build and repair the wheel
         run: ci/build_wheel.sh
         env:
@@ -144,21 +145,21 @@ jobs:
         role-duration-seconds: 43200 # 12h
     - name: Run nvidia-smi to make sure GPU is working
       run: nvidia-smi
-
     - name: checkout code repo
       uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.sha }}
         persist-credentials: false
-
+    - name: Get current date
+      id: date
+      run: |
+        echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
     - name: Standardize repository information
       uses: rapidsai/shared-actions/rapids-github-info@main
       with:
-        repo: ${{ inputs.repo }}
-        branch: ${{ inputs.branch }}
-        date: ${{ inputs.date }}
-        sha: ${{ inputs.sha }}
-
+        repo: ${{ github.repository }}
+        branch: ${{ github.ref_name }}
+        date: ${{ steps.date.outputs.date }}
+        sha: ${{ github.ref_name }}
     - name: Run tests
       run: ci/test_wheel.sh
       env:
