@@ -191,7 +191,7 @@ jobs:
         sha: ${{ github.ref_name }}
     - name: Download wheels from downloads.rapids.ai and publish to anaconda repository
       # TODO: This won't currently work because the tool only supports Python
-      # wheels. We need to fix that.
-      run: rapids-wheels-anaconda ""
+      # wheels. That will require an update.
+      run: rapids-wheels-anaconda ucx
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
