@@ -70,7 +70,6 @@ jobs:
       - name: checkout code repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ inputs.repo }}
           ref: ${{ inputs.sha }}
           persist-credentials: false
 
@@ -148,7 +147,6 @@ jobs:
     - name: checkout code repo
       uses: actions/checkout@v4
       with:
-        repository: ${{ inputs.repo }}
         ref: ${{ inputs.sha }}
         persist-credentials: false
 
