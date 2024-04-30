@@ -161,7 +161,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
         RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
   publish:
-    if: ${{ inputs.build_type == 'branch' }}
+    #if: ${{ inputs.build_type == 'branch' }}
     needs: test
     runs-on: linux-amd64-cpu4
     container:
@@ -190,8 +190,13 @@ jobs:
         date: ${{ steps.date.outputs.date }}
         sha: ${{ github.ref_name }}
     - name: Download wheels from downloads.rapids.ai and publish to anaconda repository
-      # TODO: This won't currently work because the tool only supports Python
-      # wheels. That will require an update.
-      run: rapids-wheels-anaconda ucx
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
+      # TODO: This won't currently work because the tool only supports Python
+      # wheels. That will require an update.
+      run: |
+        if [[ ! -d "/tmp/gha-tools" ]]; then
+            git clone https://github.com/jameslamb/gha-tools.git -b cpp-wheels /tmp/gha-tools
+            export PATH="/tmp/gha-tools/tools:${PATH}"
+        fi
+        rapids-wheels-anaconda ucx cpp
