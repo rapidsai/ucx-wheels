@@ -49,7 +49,7 @@ jobs:
 
           echo "MATRIX=${MATRIX}" | tee --append "${GITHUB_OUTPUT}"
   build:
-    name:  ${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}
+    name:  build-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}
     needs: compute-build-matrix
     strategy:
       matrix: ${{ fromJSON(needs.compute-build-matrix.outputs.MATRIX) }}
@@ -122,7 +122,7 @@ jobs:
 
           echo "MATRIX=${MATRIX}" | tee --append "${GITHUB_OUTPUT}"
   test:
-    name: ${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
+    name: test-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
     needs: compute-test-matrix
     strategy:
       matrix: ${{ fromJSON(needs.compute-test-matrix.outputs.MATRIX) }}
