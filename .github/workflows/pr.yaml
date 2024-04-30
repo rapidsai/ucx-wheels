@@ -24,8 +24,6 @@ permissions:
   security-events: none
   statuses: none
 
-# TODO: I would love to not need RAPIDS shared workflows for these builds, but
-# for getting things stood up quickly that's the fastest route.
 jobs:
   compute-build-matrix:
     runs-on: ubuntu-latest
@@ -58,8 +56,6 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.compute-build-matrix.outputs.MATRIX) }}
     runs-on: "linux-${{ matrix.ARCH }}-cpu16"
-    env:
-      RAPIDS_ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
     container:
       image: "rapidsai/ci-wheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
       env:
@@ -73,14 +69,9 @@ jobs:
           role-duration-seconds: 43200 # 12h
       - name: checkout code repo
         uses: actions/checkout@v4
-        env:
-          GIT_TRACE_PACKET: 1
-          GIT_TRACE: 1
-          GIT_CURL_VERBOSE: 1
         with:
           repository: ${{ inputs.repo }}
           ref: ${{ inputs.sha }}
-          fetch-depth: 0 # unshallow fetch for setuptools-scm
           persist-credentials: false
 
       - name: Standardize repository information
@@ -94,7 +85,6 @@ jobs:
       - name: Build and repair the wheel
         run: ci/build_wheel.sh
         env:
-          GH_TOKEN: ${{ github.token }}
           # TODO: When we generalize this workflow to support both publishing
           # builds and PRs we need to set this variable accordingly.
           RAPIDS_BUILD_TYPE: "pull-request"
@@ -138,11 +128,7 @@ jobs:
   test:
     name: ${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
     needs: compute-test-matrix
-    env:
-      RAPIDS_TESTS_DIR: ${{ github.workspace }}/test-results
-      RAPIDS_ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
     strategy:
-      fail-fast: false
       matrix: ${{ fromJSON(needs.compute-test-matrix.outputs.MATRIX) }}
     runs-on: "linux-${{ matrix.ARCH }}-gpu-${{ matrix.gpu }}-${{ matrix.driver }}-1"
     container:
@@ -161,14 +147,9 @@ jobs:
 
     - name: checkout code repo
       uses: actions/checkout@v4
-      env:
-        GIT_TRACE_PACKET: 1
-        GIT_TRACE: 1
-        GIT_CURL_VERBOSE: 1
       with:
         repository: ${{ inputs.repo }}
         ref: ${{ inputs.sha }}
-        fetch-depth: 0 # unshallow fetch for setuptools-scm
         persist-credentials: false
 
     - name: Standardize repository information
@@ -182,7 +163,6 @@ jobs:
     - name: Run tests
       run: ci/test_wheel.sh
       env:
-        GH_TOKEN: ${{ github.token }}
         # TODO: When we generalize this workflow to support both publishing
         # builds and PRs we need to set this variable accordingly.
         RAPIDS_BUILD_TYPE: "pull-request"
