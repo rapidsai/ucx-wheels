@@ -160,3 +160,38 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
         RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+  wheel-publish:
+    name: wheels publish
+    if: ${{ inputs.build_type == 'branch' }}
+    runs-on: linux-amd64-cpu4
+    container:
+      image: "rapidsai/ci-wheel:latest"
+      env:
+        RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+    steps:
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+        aws-region: ${{ vars.AWS_REGION }}
+        role-duration-seconds: 43200 # 12h
+    - name: checkout code repo
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Get current date
+      id: date
+      run: |
+        echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+    - name: Standardize repository information
+      uses: rapidsai/shared-actions/rapids-github-info@main
+      with:
+        repo: ${{ github.repository }}
+        branch: ${{ github.ref_name }}
+        date: ${{ steps.date.outputs.date }}
+        sha: ${{ github.ref_name }}
+    - name: Download wheels from downloads.rapids.ai and publish to anaconda repository
+      # TODO: This won't currently work because the tool only supports Python
+      # wheels. We need to fix that.
+      run: rapids-wheels-anaconda ""
+      env:
+        RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
