@@ -4,47 +4,37 @@ on:
   push:
     branches:
       - "main"
-    tags:
-      - v[0-9].[0-9][0-9].[0-9][0-9]
-  workflow_dispatch:
-    inputs:
-      branch:
-        required: true
-        type: string
-      date:
-        required: true
-        type: string
-      sha:
-        required: true
-        type: string
-      build_type:
-        type: string
-        default: nightly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
-# TODO: I would love to not need RAPIDS shared workflows for these builds, but
-# for getting things stood up quickly that's the fastest route.
 jobs:
-  wheel-build-ucx:
+  version_changed:
+    runs-on: ubuntu-latest
+    name: Check if the version was bumped
+    outputs:
+      version_changed: ${{ steps.changed_files.outputs.version_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check VERSION file for changes
+        id: changed_files
+        run: |
+          diff=$(git diff HEAD~ -- VERSION)
+          echo "The diff is ${diff}"
+          if [ -n "$diff" ]; then
+            has_changes='true'
+          else
+            has_changes='false'
+          fi
+          echo "Found changed: ${has_changes}"
+          echo "version_changed=${has_changes}" >> "$GITHUB_OUTPUT"
+  build_and_test:
+    needs: version_changed
     secrets: inherit
-    uses: rapidsai/shared-workflows/.github/workflows/wheels-build.yaml@branch-24.06
+    uses: ./.github/workflows/build_and_test.yaml
     with:
-      matrix_filter: group_by([.ARCH, (.CUDA_VER|split(".")|map(tonumber)|.[0])]) | map(max_by(.PY_VER|split(".")|map(tonumber)))
-      build_type: ${{ inputs.build_type || 'branch' }}
-      branch: ${{ inputs.branch }}
-      sha: ${{ inputs.sha }}
-      date: ${{ inputs.date }}
-      script: ci/build_wheel.sh
-  #wheel-publish-ucx:
-  #  needs: wheel-build-ucx
-  #  secrets: inherit
-  #  uses: rapidsai/shared-workflows/.github/workflows/wheels-publish.yaml@branch-24.06
-  #  with:
-  #    build_type: ${{ inputs.build_type || 'branch' }}
-  #    branch: ${{ inputs.branch }}
-  #    sha: ${{ inputs.sha }}
-  #    date: ${{ inputs.date }}
-  #    package-name: ucx
+      build_type: branch
+      publish_packages: ${{ needs.version_changed.outputs.version_changed }}

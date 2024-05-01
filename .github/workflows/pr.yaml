@@ -11,31 +11,7 @@ concurrency:
 
 
 jobs:
-  version_changed:
-    runs-on: ubuntu-latest
-    name: Check if the version was bumped
-    outputs:
-      version_changed: ${{ steps.changed_files.outputs.version_changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Check VERSION file for changes
-        id: changed_files
-        run: |
-          git fetch origin
-          diff=$(git diff HEAD~ -- VERSION)
-          echo "The diff is ${diff}"
-          if [ -n "$diff" ]; then
-            has_changes='true'
-          else
-            has_changes='false'
-          fi
-          echo "Found changed: ${has_changes}"
-          echo "version_changed=${has_changes}" >> "$GITHUB_OUTPUT"
   build_and_test:
-    if: needs.version_changed.outputs.version_changed == 'true'
-    needs: version_changed
     secrets: inherit
     uses: ./.github/workflows/build_and_test.yaml
     with:
