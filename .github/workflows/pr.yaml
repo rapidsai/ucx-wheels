@@ -23,7 +23,9 @@ jobs:
       - name: Check VERSION file for changes
         id: changed_files
         run: |
+          git fetch origin
           diff=$(git diff HEAD~ -- VERSION)
+          echo "The diff is ${diff}"
           if [ -n "$diff" ]; then
             has_changes='true'
           else
