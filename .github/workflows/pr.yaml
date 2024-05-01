@@ -32,6 +32,7 @@ jobs:
           echo "Found changed: ${has_changes}"
           echo "version_changed=${has_changes}" >> "$GITHUB_OUTPUT"
   build_and_test:
+    if: needs.changed_files.outputs.version_changed == 'true'
     needs: version_changed
     secrets: inherit
     uses: ./.github/workflows/build_and_test.yaml
