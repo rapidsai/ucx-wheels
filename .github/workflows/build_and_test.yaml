@@ -89,7 +89,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-          role-duration-seconds: 600
+          role-duration-seconds: 900
       - name: checkout code repo
         uses: actions/checkout@v4
         with:
@@ -119,7 +119,7 @@ jobs:
       with:
         role-to-assume: ${{ vars.AWS_ROLE_ARN }}
         aws-region: ${{ vars.AWS_REGION }}
-        role-duration-seconds: 600
+        role-duration-seconds: 900
     - name: Run nvidia-smi to make sure GPU is working
       run: nvidia-smi
     - name: checkout code repo
@@ -146,7 +146,7 @@ jobs:
       with:
         role-to-assume: ${{ vars.AWS_ROLE_ARN }}
         aws-region: ${{ vars.AWS_REGION }}
-        role-duration-seconds: 600
+        role-duration-seconds: 900
     - name: checkout code repo
       uses: actions/checkout@v4
       with:
