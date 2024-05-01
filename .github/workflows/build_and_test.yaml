@@ -26,73 +26,10 @@ jobs:
   compute-build-matrix:
     runs-on: ubuntu-latest
     outputs:
-      MATRIX: ${{ steps.compute-matrix.outputs.MATRIX }}
+      BUILD_MATRIX: ${{ steps.compute-matrix.outputs.BUILD_MATRIX }}
+      TEST_MATRIX: ${{ steps.compute-matrix.outputs.TEST_MATRIX }}
     steps:
       - name: Compute Build Matrix
-        id: compute-matrix
-        run: |
-          set -eo pipefail
-
-          export MATRIX="
-          # amd64
-          - { ARCH: 'amd64', PY_VER: '3.11', CUDA_VER: '11.8.0', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'amd64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'rockylinux8' }
-          # arm64
-          - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '11.8.0', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'rockylinux8' }
-          "
-
-          MATRIX="$(
-            yq -n -o json 'env(MATRIX)' | \
-            jq -c '{include: .}'
-          )"
-
-          echo "MATRIX=${MATRIX}" | tee --append "${GITHUB_OUTPUT}"
-  build:
-    name:  build-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}
-    needs: compute-build-matrix
-    strategy:
-      matrix: ${{ fromJSON(needs.compute-build-matrix.outputs.MATRIX) }}
-    runs-on: "linux-${{ matrix.ARCH }}-cpu16"
-    container:
-      image: "rapidsai/ci-wheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
-      env:
-        RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
-    steps:
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-          role-duration-seconds: 43200 # 12h
-      - name: checkout code repo
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Get current date
-        id: date
-        run: |
-          echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
-      - name: Standardize repository information
-        uses: rapidsai/shared-actions/rapids-github-info@main
-        with:
-          repo: ${{ github.repository }}
-          branch: ${{ github.ref_name }}
-          date: ${{ steps.date.outputs.date }}
-          sha: ${{ github.ref_name }}
-      - name: Build and repair the wheel
-        run: ci/build_wheel.sh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
-        # Use a shell that loads the rc file so that we get the compiler settings
-        shell: bash -leo pipefail {0}
-  compute-test-matrix:
-    needs: build
-    runs-on: ubuntu-latest
-    outputs:
-      MATRIX: ${{ steps.compute-matrix.outputs.MATRIX }}
-    steps:
-      - name: Compute test matrix
         id: compute-matrix
         run: |
           set -eo pipefail
@@ -101,7 +38,23 @@ jobs:
           #
           #     [ARCH, PY_VER, CUDA_VER, LINUX_VER, GPU, DRIVER]
           #
-          export MATRICES="
+          export BUILD_MATRIX="
+          # amd64
+          - { ARCH: 'amd64', PY_VER: '3.11', CUDA_VER: '11.8.0', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'amd64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'rockylinux8' }
+          # arm64
+          - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '11.8.0', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'rockylinux8' }
+          "
+
+          BUILD_MATRIX="$(
+            yq -n -o json 'env(BUILD_MATRIX)' | \
+            jq -c '{include: .}'
+          )"
+
+          echo "BUILD_MATRIX=${BUILD_MATRIX}" | tee --append "${GITHUB_OUTPUT}"
+
+          export TEST_MATRIX="
           # amd64
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '11.8.0', LINUX_VER: 'ubuntu20.04', gpu: 'a100', driver: 'latest' }
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
@@ -112,20 +65,49 @@ jobs:
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
           "
 
-          TEST_MATRIX=$(yq -n 'env(MATRICES)')
+          TEST_MATRIX=$(yq -n 'env(TEST_MATRIX)')
           export TEST_MATRIX
 
-          MATRIX="$(
+          TEST_MATRIX="$(
             yq -n -o json 'env(TEST_MATRIX)' | \
             jq -c '{include: .}'
           )"
 
-          echo "MATRIX=${MATRIX}" | tee --append "${GITHUB_OUTPUT}"
+          echo "TEST_MATRIX=${TEST_MATRIX}" | tee --append "${GITHUB_OUTPUT}"
+  build:
+    name:  build-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}
+    needs: compute-build-matrix
+    strategy:
+      matrix: ${{ fromJSON(needs.compute-build-matrix.outputs.BUILD_MATRIX) }}
+    runs-on: "linux-${{ matrix.ARCH }}-cpu16"
+    container:
+      image: "rapidsai/ci-wheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
+      env:
+        RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-duration-seconds: 600
+      - name: checkout code repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Standardize repository information
+        uses: rapidsai/shared-actions/rapids-github-info@main
+      - name: Build and repair the wheel
+        run: ci/build_wheel.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+        # Use a shell that loads the rc file so that we get the compiler settings
+        shell: bash -leo pipefail {0}
   test:
     name: test-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
-    needs: compute-test-matrix
+    needs: build
     strategy:
-      matrix: ${{ fromJSON(needs.compute-test-matrix.outputs.MATRIX) }}
+      matrix: ${{ fromJSON(needs.compute-test-matrix.outputs.TEST_MATRIX) }}
     runs-on: "linux-${{ matrix.ARCH }}-gpu-${{ matrix.gpu }}-${{ matrix.driver }}-1"
     container:
       image: "rapidsai/citestwheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
@@ -137,24 +119,15 @@ jobs:
       with:
         role-to-assume: ${{ vars.AWS_ROLE_ARN }}
         aws-region: ${{ vars.AWS_REGION }}
-        role-duration-seconds: 43200 # 12h
+        role-duration-seconds: 600
     - name: Run nvidia-smi to make sure GPU is working
       run: nvidia-smi
     - name: checkout code repo
       uses: actions/checkout@v4
       with:
         persist-credentials: false
-    - name: Get current date
-      id: date
-      run: |
-        echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
     - name: Standardize repository information
       uses: rapidsai/shared-actions/rapids-github-info@main
-      with:
-        repo: ${{ github.repository }}
-        branch: ${{ github.ref_name }}
-        date: ${{ steps.date.outputs.date }}
-        sha: ${{ github.ref_name }}
     - name: Run tests
       run: ci/test_wheel.sh
       env:
@@ -173,7 +146,7 @@ jobs:
       with:
         role-to-assume: ${{ vars.AWS_ROLE_ARN }}
         aws-region: ${{ vars.AWS_REGION }}
-        role-duration-seconds: 43200 # 12h
+        role-duration-seconds: 600
     - name: checkout code repo
       uses: actions/checkout@v4
       with:
@@ -184,11 +157,6 @@ jobs:
         echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
     - name: Standardize repository information
       uses: rapidsai/shared-actions/rapids-github-info@main
-      with:
-        repo: ${{ github.repository }}
-        branch: ${{ github.ref_name }}
-        date: ${{ steps.date.outputs.date }}
-        sha: ${{ github.ref_name }}
     - name: Download wheels from downloads.rapids.ai and publish to anaconda repository
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
