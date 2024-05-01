@@ -65,9 +65,6 @@ jobs:
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
           "
 
-          TEST_MATRIX=$(yq -n 'env(TEST_MATRIX)')
-          export TEST_MATRIX
-
           TEST_MATRIX="$(
             yq -n -o json 'env(TEST_MATRIX)' | \
             jq -c '{include: .}'
