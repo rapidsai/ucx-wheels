@@ -6,6 +6,10 @@ on:
       build_type:
         required: true
         type: string
+      publish_packages:
+        required: false
+        default: 'false'
+        type: string
 
 permissions:
   actions: read
@@ -131,7 +135,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
         RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
   publish:
-    if: ${{ inputs.build_type == 'branch' }}
+    if: ${{ inputs.publish_packages == 'true' }}
     needs: test
     runs-on: linux-amd64-cpu4
     container:
