@@ -54,7 +54,7 @@ jobs:
 
           echo "BUILD_MATRIX=${BUILD_MATRIX}" | tee --append "${GITHUB_OUTPUT}"
 
-          export MATRICES="
+          export TEST_MATRIX="
           # amd64
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '11.8.0', LINUX_VER: 'ubuntu20.04', gpu: 'a100', driver: 'latest' }
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
@@ -65,11 +65,11 @@ jobs:
           - { ARCH: 'arm64', PY_VER: '3.11', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
           "
 
-          TMP_TEST_MATRIX=$(yq -n 'env(MATRICES)')
-          export TMP_TEST_MATRIX
+          TEST_MATRIX=$(yq -n 'env(TEST_MATRIX)')
+          export TEST_MATRIX
 
           TEST_MATRIX="$(
-            yq -n -o json 'env(TMP_TEST_MATRIX)' | \
+            yq -n -o json 'env(TEST_MATRIX)' | \
             jq -c '{include: .}'
           )"
 
