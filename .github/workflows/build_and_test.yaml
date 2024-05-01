@@ -102,7 +102,7 @@ jobs:
         shell: bash -leo pipefail {0}
   test:
     name: test-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
-    needs: build
+    needs: [compute-matrices, build]
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrices.outputs.TEST_MATRIX) }}
     runs-on: "linux-${{ matrix.ARCH }}-gpu-${{ matrix.gpu }}-${{ matrix.driver }}-1"
