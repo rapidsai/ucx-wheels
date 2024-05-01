@@ -23,7 +23,7 @@ permissions:
   statuses: none
 
 jobs:
-  compute-build-matrix:
+  compute-matrices:
     runs-on: ubuntu-latest
     outputs:
       BUILD_MATRIX: ${{ steps.compute-matrix.outputs.BUILD_MATRIX }}
@@ -76,9 +76,9 @@ jobs:
           echo "TEST_MATRIX=${TEST_MATRIX}" | tee --append "${GITHUB_OUTPUT}"
   build:
     name:  build-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}
-    needs: compute-build-matrix
+    needs: compute-matrices
     strategy:
-      matrix: ${{ fromJSON(needs.compute-build-matrix.outputs.BUILD_MATRIX) }}
+      matrix: ${{ fromJSON(needs.compute-matrices.outputs.BUILD_MATRIX) }}
     runs-on: "linux-${{ matrix.ARCH }}-cpu16"
     container:
       image: "rapidsai/ci-wheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
@@ -107,7 +107,7 @@ jobs:
     name: test-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
     needs: build
     strategy:
-      matrix: ${{ fromJSON(needs.compute-test-matrix.outputs.TEST_MATRIX) }}
+      matrix: ${{ fromJSON(needs.compute-matrices.outputs.TEST_MATRIX) }}
     runs-on: "linux-${{ matrix.ARCH }}-gpu-${{ matrix.gpu }}-${{ matrix.driver }}-1"
     container:
       image: "rapidsai/citestwheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
