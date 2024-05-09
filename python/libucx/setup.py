@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import os
 import tempfile
 import glob
+import packaging.version
 
 
 @contextmanager
@@ -22,13 +23,17 @@ class build_py(build_orig):
         super().run()
 
         with open("VERSION") as f:
-            version = f.read().strip()
+            package_version = f.read().strip()
+        
+        # strip off any other non-UCX version components, like ".post1"
+        ucx_semver = packaging.version.parse(package_version).base_version
+        ucx_tag = f"v{ucx_semver}"
 
         install_prefix = os.path.abspath(os.path.join(self.build_lib, "libucx"))
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with chdir(tmpdir):
-                subprocess.run(["git", "clone", "-b", f"v{version}", "https://github.com/openucx/ucx.git", "ucx"])
+                subprocess.run(["git", "clone", "-b", f"{ucx_tag}", "https://github.com/openucx/ucx.git", "ucx"])
                 with chdir("ucx"):
                     subprocess.run(["./autogen.sh"])
                     subprocess.run(["./contrib/configure-release",
