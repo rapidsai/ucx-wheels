@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import os
 import tempfile
 import glob
+import packaging.version
 
 
 @contextmanager
@@ -25,8 +26,8 @@ class build_py(build_orig):
             package_version = f.read().strip()
         
         # strip off any other non-UCX version components, like ".post1"
-        major, minor, patch, *_ = package_version.split(".")
-        ucx_tag = f"v{major}.{minor}.{patch}"
+        ucx_semver = packaging.version.parse(package_version).base_version
+        ucx_tag = f"v{ucx_semver}"
 
         install_prefix = os.path.abspath(os.path.join(self.build_lib, "libucx"))
 
