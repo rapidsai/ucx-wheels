@@ -16,3 +16,9 @@ While this approach can still be problematic if other libraries loaded on the sy
 
 UCX wheels in this repository are built by using a custom build command for setuptools to trigger the build of the UCX library.
 The library is then bundled and installed directly into the output directories.
+
+`{major}.{minor}.{patch}` versions of this library exactly correspond to versions of UCX.
+For example, `libucx==1.16.0` contains libraries built from https://github.com/openucx/ucx/releases/tag/v1.16.0.
+
+When the packaging logic itself changes, post-release versions like `libucx==1.16.0.post1` are released.
+See "Post-releases" in the Python packaging docs ([link](https://packaging.python.org/en/latest/specifications/version-specifiers/#post-releases)) for details.
