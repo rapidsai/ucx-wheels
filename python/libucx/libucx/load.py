@@ -16,7 +16,6 @@
 import ctypes
 import os
 
-
 # IMPORTANT: The load order here matters! libucm.so depends on symbols in libucs.so, but
 # it does not express this via a DT_NEEDED entry, presumably because libucs.so also has
 # a dependency on libucm.so and the libraries are attempting to avoid a circular
@@ -33,8 +32,8 @@ UCX_LIBRARIES = [
     "libucp.so",
 ]
 
-def load_library():
 
+def load_library():
     # Dynamically load libucx.so. Prefer a system library if one is present to
     # avoid clobbering symbols that other packages might expect, but if no
     # other library is present use the one in the wheel.

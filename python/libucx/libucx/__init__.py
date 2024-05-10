@@ -17,10 +17,10 @@ import importlib.resources
 
 from .load import load_library
 
-
 __version__ = (
-    importlib.resources.files("libucx")
-    .joinpath("VERSION")
-    .read_text()
-    .strip()
+    importlib.resources.files("libucx").joinpath("VERSION").read_text().strip()
 )
+
+__all__ = [
+    "load_library",
+]

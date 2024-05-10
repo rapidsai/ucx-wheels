@@ -2,7 +2,7 @@
 
 This repository hosts code for building wheels of [UCX](https://github.com/openucx/ucx/).
 
-## Purpose 
+## Purpose
 RAPIDS publishes multiple libraries that rely on UCX, including [ucxx](https://github.com/rapidsai/ucxx/) and [ucx-py](https://github.com/rapidsai/ucx-py).
 One of the ways that RAPIDS vendors these libraries is in the form of [pip wheels](https://packaging.python.org/en/latest/specifications/binary-distribution-format/).
 For portability, wheels should be as self-contained as possible as per the [manylinux standard](https://peps.python.org/pep-0513/).
