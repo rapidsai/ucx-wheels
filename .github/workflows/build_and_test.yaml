@@ -42,6 +42,7 @@ jobs:
           key: pre-commit-0|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Run pre-commit
         run: |
+          conda install --yes pre-commit
           pre-commit run --all-files --show-diff-on-failure
   compute-matrices:
     needs: checks
