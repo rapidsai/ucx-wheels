@@ -1,11 +1,12 @@
+import glob
+import os
+import subprocess
+import tempfile
+from contextlib import contextmanager
+
+import packaging.version
 from setuptools import setup
 from setuptools.command.build_py import build_py as build_orig
-import subprocess
-from contextlib import contextmanager
-import os
-import tempfile
-import glob
-import packaging.version
 
 
 @contextmanager
@@ -24,7 +25,7 @@ class build_py(build_orig):
 
         with open("VERSION") as f:
             package_version = f.read().strip()
-        
+
         # strip off any other non-UCX version components, like ".post1"
         ucx_semver = packaging.version.parse(package_version).base_version
         ucx_tag = f"v{ucx_semver}"
@@ -33,20 +34,36 @@ class build_py(build_orig):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with chdir(tmpdir):
-                subprocess.run(["git", "clone", "-b", f"{ucx_tag}", "https://github.com/openucx/ucx.git", "ucx"])
+                subprocess.run(
+                    [
+                        "git",
+                        "clone",
+                        "-b",
+                        f"{ucx_tag}",
+                        "https://github.com/openucx/ucx.git",
+                        "ucx",
+                    ]
+                )
                 with chdir("ucx"):
                     subprocess.run(["./autogen.sh"])
-                    subprocess.run(["./contrib/configure-release",
-                                    f"--prefix={install_prefix}",
-                                    "--enable-mt",
-                                    "--enable-cma",
-                                    "--enable-numa",
-                                    "--with-gnu-ld",
-                                    "--with-sysroot",
-                                    "--without-verbs",
-                                    "--without-rdmacm",
-                                    "--with-cuda=/usr/local/cuda"])
-                    subprocess.run(["make", "-j"], env={**os.environ, "CPPFLAGS": "-I/usr/local/cuda/include"})
+                    subprocess.run(
+                        [
+                            "./contrib/configure-release",
+                            f"--prefix={install_prefix}",
+                            "--enable-mt",
+                            "--enable-cma",
+                            "--enable-numa",
+                            "--with-gnu-ld",
+                            "--with-sysroot",
+                            "--without-verbs",
+                            "--without-rdmacm",
+                            "--with-cuda=/usr/local/cuda",
+                        ]
+                    )
+                    subprocess.run(
+                        ["make", "-j"],
+                        env={**os.environ, "CPPFLAGS": "-I/usr/local/cuda/include"},
+                    )
                     subprocess.run(["make", "install"])
                     # The config file built into UCX is not relocatable. We need to fix
                     # that so that we can package up UCX and distribute it in a wheel.
@@ -55,7 +72,7 @@ class build_py(build_orig):
                             "sed",
                             "-i",
                             r"s/^set(prefix.*/set(prefix \"${CMAKE_CURRENT_LIST_DIR}\/..\/..\/..\")/",
-                            f"{install_prefix}/lib/cmake/ucx/ucx-targets.cmake"
+                            f"{install_prefix}/lib/cmake/ucx/ucx-targets.cmake",
                         ]
                     )
                     # The UCX libraries must be able to find each other as dependencies.

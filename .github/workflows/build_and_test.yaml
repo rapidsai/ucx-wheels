@@ -27,7 +27,25 @@ permissions:
   statuses: none
 
 jobs:
+  checks:
+    runs-on: ubuntu-latest
+    container:
+      image: rapidsai/ci-conda:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-0|${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Run pre-commit
+        run: |
+          conda install --yes pre-commit
+          pre-commit run --all-files --show-diff-on-failure
   compute-matrices:
+    needs: checks
     runs-on: ubuntu-latest
     outputs:
       BUILD_MATRIX: ${{ steps.compute-matrix.outputs.BUILD_MATRIX }}
