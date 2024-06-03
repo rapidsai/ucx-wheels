@@ -11,13 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-from ._version import __git_commit__, __version__
-from .load import load_library
+import importlib.resources
 
-__all__ = [
-    "__git_commit__",
-    "load_library",
-    "__version__",
-]
+__version__ = (
+    importlib.resources.files(__package__).joinpath("VERSION").read_text().strip()
+)
+try:
+    __git_commit__ = (
+        importlib.resources.files(__package__)
+        .joinpath("GIT_COMMIT")
+        .read_text()
+        .strip()
+    )
+except FileNotFoundError:
+    __git_commit__ = ""
+
+__all__ = ["__git_commit__", "__version__"]
