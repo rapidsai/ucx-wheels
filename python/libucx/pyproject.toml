@@ -1,9 +1,9 @@
+# Copyright (c) 2024, NVIDIA CORPORATION.
+
 [build-system]
-build-backend = "setuptools.build_meta"
+build-backend = "rapids_build_backend.build"
 requires = [
-    "packaging",
-    "setuptools>=64.0.0",
-    "wheel",
+    "rapids-build-backend>=0.3.0,<0.4.0dev0"
 ]
 
 [project]
@@ -32,6 +32,15 @@ libucx = "libucx"
 
 [project.urls]
 Homepage = "https://github.com/openucx/ucx"
+
+[tool.rapids-build-backend]
+build-backend = "setuptools.build_meta"
+dependencies-file = ""
+requires = [
+    "packaging",
+    "setuptools>=64.0.0",
+    "wheel",
+]
 
 [tool.setuptools]
 include-package-data = true
