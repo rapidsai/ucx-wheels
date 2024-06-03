@@ -35,6 +35,7 @@ Homepage = "https://github.com/openucx/ucx"
 
 [tool.rapids-build-backend]
 build-backend = "setuptools.build_meta"
+commit-files = ["libucx/GIT_COMMIT"]
 dependencies-file = ""
 requires = [
     "packaging",
