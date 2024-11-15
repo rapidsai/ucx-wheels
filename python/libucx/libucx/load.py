@@ -39,7 +39,7 @@ UCX_LIBRARIES = [
 # a library to be loaded later and successfully satisfy that dependency
 # without polluting the global symbol table with symbols from
 # that library that could conflict with symbols from other DSOs.
-PREFERRED_LOAD_FLAG = ctypes.RTLD_LOCAL
+PREFERRED_LOAD_FLAG = ctypes.RTLD_GLOBAL
 
 
 def _load_system_installation(soname: str):
