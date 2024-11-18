@@ -67,6 +67,10 @@ class build_py(build_orig):
                     subprocess.run(["make", "install"])
                     # The config file built into UCX is not relocatable. We need to fix
                     # that so that we can package up UCX and distribute it in a wheel.
+                    # This was fixed in
+                    # https://github.com/openucx/ucx/commit/c3437851f4abb5b7da966109d3762966ac30c476
+                    # and merged into version 1.17, so we can remove this patch once we
+                    # no longer need to support older versions.
                     subprocess.run(
                         [
                             "sed",
