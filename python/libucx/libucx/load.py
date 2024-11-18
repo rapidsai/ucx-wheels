@@ -16,18 +16,9 @@
 import ctypes
 import os
 
-# IMPORTANT: The load order here matters! libucm.so depends on symbols in libucs.so, but
-# it does not express this via a DT_NEEDED entry, presumably because libucs.so also has
-# a dependency on libucm.so and the libraries are attempting to avoid a circular
-# dependency. Moreover, it seems like if libucs.so is not loaded before libuct.so and
-# libucp.so something is set up incorrectly, perhaps with the atexit handlers, because
-# on library close there is a double free issue. Therefore, libucs.so must be loaded
-# first. The other libraries may then be loaded in any order. The libraries themselves
-# all have $ORIGIN RPATHs to find each other.
 UCX_LIBRARIES = [
     "libucs.so",
     "libucs_signal.so",
-    "libucm.so",
     "libuct.so",
     "libucp.so",
 ]
@@ -39,7 +30,7 @@ UCX_LIBRARIES = [
 # a library to be loaded later and successfully satisfy that dependency
 # without polluting the global symbol table with symbols from
 # that library that could conflict with symbols from other DSOs.
-PREFERRED_LOAD_FLAG = ctypes.RTLD_GLOBAL
+PREFERRED_LOAD_FLAG = ctypes.RTLD_LOCAL
 
 
 def _load_system_installation(soname: str):
