@@ -53,4 +53,4 @@ if ! grep -q "cuEventCreate" "$TEMP_DIR/check_output.txt" || ! grep -q "cuStream
 fi
 echo "Test 3 passed"
 
-echo -e "\nAll tests passed successfully!" 
+echo -e "\nAll tests passed successfully!"
