@@ -3,6 +3,9 @@
 
 set -euo pipefail
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 package_name="libucx"
 
 WHEELHOUSE="${PWD}/dist/"
@@ -14,16 +17,16 @@ python -m pip install "${WHEELHOUSE}/${package_name}_${RAPIDS_PY_CUDA_SUFFIX}"*.
 python -c "import libucx; libucx.load_library(); print('Loaded libucx libraries successfully!')"
 
 if [ "${RAPIDS_CUDA_VERSION}" = "11" ]; then
-    REFERENCE_FILE="ci/symbols_cuda11.txt"
+    REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda11.txt"
 elif [ "${RAPIDS_CUDA_VERSION}" = "12" ]; then
-    REFERENCE_FILE="ci/symbols_cuda12.txt"
+    REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda12.txt"
 else
     echo "Error: Unsupported CUDA version ${RAPIDS_CUDA_VERSION}"
     exit 1
 fi
 
 rapids-logger "Test CUDA symbol checker"
-bash utils/test_check_cuda_symbols.sh "$REFERENCE_FILE"
+bash "${SCRIPT_DIR}/../utils/test_check_cuda_symbols.sh" "$REFERENCE_FILE"
 
 rapids-logger "Checking CUDA symbols against reference list"
-bash utils/check_cuda_symbols.sh "$REFERENCE_FILE"
+bash "${SCRIPT_DIR}/../utils/check_cuda_symbols.sh" "$REFERENCE_FILE"

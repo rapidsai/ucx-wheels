@@ -10,6 +10,9 @@
 
 set -euo pipefail
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 # Check if reference file path is provided
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <reference_file>"
@@ -25,7 +28,7 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 
 # Test 1: Check with complete reference file
 echo "Test 1: Checking with complete reference file (should pass)..."
-if ! bash ci/check_cuda_symbols.sh "$REFERENCE_FILE"; then
+if ! bash "${SCRIPT_DIR}/check_cuda_symbols.sh" "$REFERENCE_FILE"; then
     echo "Error: Test 1 failed - check should have passed with complete reference file"
     exit 1
 fi
@@ -37,7 +40,7 @@ echo -e "\nTest 2: Checking with modified reference file (should fail)..."
 grep -v -E 'cuEventCreate|cuStreamCreate' "$REFERENCE_FILE" > "$TEMP_DIR/modified_reference.txt"
 
 # Run the check and capture the output
-if bash ci/check_cuda_symbols.sh "$TEMP_DIR/modified_reference.txt" 2>&1 | tee "$TEMP_DIR/check_output.txt"; then
+if bash "${SCRIPT_DIR}/check_cuda_symbols.sh" "$TEMP_DIR/modified_reference.txt" 2>&1 | tee "$TEMP_DIR/check_output.txt"; then
     echo "Error: Test 2 failed - check should have failed with modified reference file"
     exit 1
 fi
