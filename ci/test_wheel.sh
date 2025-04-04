@@ -13,8 +13,6 @@ python -m pip install "${WHEELHOUSE}/${package_name}_${RAPIDS_PY_CUDA_SUFFIX}"*.
 # Test basic library loading
 python -c "import libucx; libucx.load_library(); print('Loaded libucx libraries successfully!')"
 
-# Check CUDA symbols against reference list
-echo "Checking CUDA symbols against reference list..."
 if [ "${RAPIDS_CUDA_VERSION}" = "11" ]; then
     REFERENCE_FILE="ci/symbols_cuda11.txt"
 elif [ "${RAPIDS_CUDA_VERSION}" = "12" ]; then
@@ -24,4 +22,8 @@ else
     exit 1
 fi
 
-bash ci/check_cuda_symbols.sh "$REFERENCE_FILE"
+rapids-logger "Test CUDA symbol checker"
+bash utils/test_check_cuda_symbols.sh "$REFERENCE_FILE"
+
+rapids-logger "Checking CUDA symbols against reference list"
+bash utils/check_cuda_symbols.sh "$REFERENCE_FILE"
