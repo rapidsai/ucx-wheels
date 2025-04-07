@@ -19,8 +19,6 @@ cuIpcGetMemHandle
 cuIpcOpenMemHandle_v2
 cuMemAllocManaged
 cuMemAlloc_v2
-cuMemcpyAsync
-cuMemcpyDtoDAsync_v2
 cuMemFree_v2
 cuMemGetAddressRange_v2
 cuMemGetAllocationPropertiesFromHandle
@@ -29,6 +27,8 @@ cuMemHostUnregister
 cuMemRangeGetAttribute
 cuMemRelease
 cuMemRetainAllocationHandle
+cuMemcpyAsync
+cuMemcpyDtoDAsync_v2
 cuPointerGetAttribute
 cuPointerGetAttributes
 cuPointerSetAttribute
