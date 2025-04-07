@@ -16,9 +16,9 @@ python -m pip install "${WHEELHOUSE}/${package_name}_${RAPIDS_PY_CUDA_SUFFIX}"*.
 # Test basic library loading
 python -c "import libucx; libucx.load_library(); print('Loaded libucx libraries successfully!')"
 
-if [ "${RAPIDS_CUDA_VERSION}" = "11" ]; then
+if [[ "${RAPIDS_CUDA_VERSION}" =~ ^11\..* ]]; then
     REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda11.txt"
-elif [ "${RAPIDS_CUDA_VERSION}" = "12" ]; then
+elif [[ "${RAPIDS_CUDA_VERSION}" =~ ^12\..* ]]; then
     REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda12.txt"
 else
     echo "Error: Unsupported CUDA version ${RAPIDS_CUDA_VERSION}"
