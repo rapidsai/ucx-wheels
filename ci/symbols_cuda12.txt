@@ -51,3 +51,12 @@ cuStreamAddCallback
 cuStreamCreate
 cuStreamDestroy_v2
 cuStreamSynchronize
+cudaDeviceSynchronize@libcudart.so.12
+cudaFree@libcudart.so.12
+cudaGetDeviceCount@libcudart.so.12
+cudaGetErrorString@libcudart.so.12
+cudaMalloc@libcudart.so.12
+cudaMallocManaged@libcudart.so.12
+cudaMemcpy@libcudart.so.12
+cudaMemset@libcudart.so.12
+cudaSetDevice@libcudart.so.12
