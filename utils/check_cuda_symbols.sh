@@ -32,10 +32,17 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 get_cuda_symbols "$TEMP_DIR/current_symbols.txt"
 
 # Compare with reference list
-if ! diff -u "$REFERENCE_FILE" "$TEMP_DIR/current_symbols.txt" > "$TEMP_DIR/symbol_diff.txt"; then
+new_symbols=()
+while IFS= read -r symbol; do
+    if ! grep -q "^$symbol$" "$REFERENCE_FILE"; then
+        new_symbols+=("$symbol")
+    fi
+done < "$TEMP_DIR/current_symbols.txt"
+
+if [ ${#new_symbols[@]} -ne 0 ]; then
     echo "Error: New CUDA symbols detected!"
-    echo "Diff of changes:"
-    cat "$TEMP_DIR/symbol_diff.txt"
+    echo "The following symbols are not present in the reference file:"
+    printf '* %s\n' "${new_symbols[@]}"
     exit 1
 fi
 
