@@ -36,6 +36,15 @@ cuStreamAddCallback
 cuStreamCreate
 cuStreamDestroy_v2
 cuStreamSynchronize
+cudaDeviceSynchronize
+cudaFree
+cudaGetDeviceCount
+cudaGetErrorString
+cudaMalloc
+cudaMallocManaged
+cudaMemcpy
+cudaMemset
+cudaSetDevice
 cudaDeviceSynchronize@libcudart.so.11.0
 cudaFree@libcudart.so.11.0
 cudaGetDeviceCount@libcudart.so.11.0
