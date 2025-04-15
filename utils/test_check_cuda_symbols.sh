@@ -29,10 +29,10 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 # Test 1: Check with complete reference file
 echo "Test 1: Checking with complete reference file (should pass)..."
 if ! bash "${SCRIPT_DIR}/check_cuda_symbols.sh" "$REFERENCE_FILE"; then
-    echo "Error: Test 1 failed - check should have passed with complete reference file"
+    echo "Error: Test 1 FAILED - check should have passed with complete reference file"
     exit 1
 fi
-echo "Test 1 passed"
+echo "Test 1 PASSED"
 
 # Test 2: Create a modified reference file missing some symbols
 echo -e "\nTest 2: Checking with modified reference file (should fail)..."
@@ -41,16 +41,17 @@ grep -v -E 'cuEventCreate|cuStreamCreate' "$REFERENCE_FILE" > "$TEMP_DIR/modifie
 
 # Run the check and capture the output
 if bash "${SCRIPT_DIR}/check_cuda_symbols.sh" "$TEMP_DIR/modified_reference.txt" 2>&1 | tee "$TEMP_DIR/check_output.txt"; then
-    echo "Error: Test 2 failed - check should have failed with modified reference file"
+    echo "Error: Test 2 FAILED - check should have failed with modified reference file"
     exit 1
 fi
+echo "Test 2 PASSED"
 
 # Test 3: Verify the diff output shows the expected missing symbols
 echo -e "\nTest 3: Verifying diff output..."
 if ! grep -q "cuEventCreate" "$TEMP_DIR/check_output.txt" || ! grep -q "cuStreamCreate" "$TEMP_DIR/check_output.txt"; then
-    echo "Error: Test 3 failed - diff output should show missing symbols"
+    echo "Error: Test 3 FAILED - diff output should show missing symbols"
     exit 1
 fi
-echo "Test 3 passed"
+echo "Test 3 PASSED"
 
 echo -e "\nAll tests passed successfully!"
