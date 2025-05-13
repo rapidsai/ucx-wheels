@@ -124,6 +124,27 @@ jobs:
           RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
         # Use a shell that loads the rc file so that we get the compiler settings
         shell: bash -leo pipefail {0}
+      - name: Get package name
+        run: |
+          RAPIDS_PY_CUDA_SUFFIX=$(rapids-wheel-ctk-name-gen ${RAPIDS_CUDA_VERSION})
+          RAPIDS_PACKAGE_NAME=$(
+            RAPIDS_NO_PKG_EXTENSION=true \
+            RAPIDS_PY_WHEEL_PURE=1 \
+            RAPIDS_PY_WHEEL_NAME="ucx_${RAPIDS_PY_CUDA_SUFFIX}" \
+              rapids-package-name wheel_cpp
+          )
+          echo "RAPIDS_PACKAGE_NAME=${RAPIDS_PACKAGE_NAME}" >> "${GITHUB_OUTPUT}"
+          echo "WHEEL_OUTPUT_DIR=${RAPIDS_WHEEL_BLD_OUTPUT_DIR}" >> "${GITHUB_OUTPUT}"
+        id: package-name
+      - name: Show files to be uploaded
+        run: |
+          echo "Contents of directory to be uploaded:"
+          ls -R ${{ steps.package-name.outputs.WHEEL_OUTPUT_DIR }}
+      - uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: 'error'
+          name: ${{ steps.package-name.outputs.RAPIDS_PACKAGE_NAME }}
+          path: ${{ steps.package-name.outputs.WHEEL_OUTPUT_DIR }}
   test:
     name: test-${{ matrix.CUDA_VER }}, ${{ matrix.ARCH }}, ${{ matrix.LINUX_VER }}, ${{ matrix.gpu }}
     needs: [compute-matrices, build]
@@ -161,6 +182,7 @@ jobs:
     container:
       image: "rapidsai/ci-wheel:latest"
       env:
+        GH_TOKEN: ${{ github.token }}
         RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
     steps:
     - uses: aws-actions/configure-aws-credentials@v4
@@ -178,8 +200,8 @@ jobs:
         echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
     - name: Standardize repository information
       uses: rapidsai/shared-actions/rapids-github-info@main
-    - name: Download wheels from downloads.rapids.ai and publish to anaconda repository
+    - name: Download wheels from artifact storage and publish to anaconda repository
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
       run: |
-        rapids-wheels-anaconda ucx cpp
+        rapids-upload-to-anaconda-github ucx cpp
