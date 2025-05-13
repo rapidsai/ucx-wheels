@@ -204,4 +204,4 @@ jobs:
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
       run: |
-        rapids-upload-to-anaconda-github ucx cpp
+        rapids-wheels-anaconda-github ucx cpp
