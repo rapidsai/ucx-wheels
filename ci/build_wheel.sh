@@ -10,4 +10,12 @@ source rapids-date-string
 
 python -m pip wheel "${package_dir}"/ -w "${package_dir}"/dist -vvv --no-deps --disable-pip-version-check
 
-python -m auditwheel repair -w ${package_dir}/final_dist --exclude "libcuda.so.1" --exclude "libnvidia-ml.so.1" --exclude "libucm.so.0" --exclude "libuct.so.0" --exclude "libucs.so.0" --exclude "libucp.so.0" ${package_dir}/dist/*
+python -m auditwheel repair             \
+    -w "${RAPIDS_WHEEL_BLD_OUTPUT_DIR}" \
+    --exclude "libcuda.so.1"            \
+    --exclude "libnvidia-ml.so.1"       \
+    --exclude "libucm.so.0"             \
+    --exclude "libuct.so.0"             \
+    --exclude "libucs.so.0"             \
+    --exclude "libucp.so.0"             \
+    ${package_dir}/dist/*
