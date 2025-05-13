@@ -161,6 +161,7 @@ jobs:
     container:
       image: "rapidsai/ci-wheel:latest"
       env:
+        GH_TOKEN: ${{ github.token }}
         RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
     steps:
     - uses: aws-actions/configure-aws-credentials@v4
@@ -178,8 +179,8 @@ jobs:
         echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
     - name: Standardize repository information
       uses: rapidsai/shared-actions/rapids-github-info@main
-    - name: Download wheels from downloads.rapids.ai and publish to anaconda repository
+    - name: Download wheels from artifact storage and publish to anaconda repository
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
       run: |
-        rapids-wheels-anaconda ucx cpp
+        rapids-upload-to-anaconda-github ucx cpp
