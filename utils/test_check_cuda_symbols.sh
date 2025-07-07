@@ -16,7 +16,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 # Check if reference file path is provided
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <reference_file>"
-    echo "  reference_file: Path to the reference list of CUDA symbols (e.g., ci/symbols_cuda11.txt)"
+    echo "  reference_file: Path to the reference list of CUDA symbols (e.g., ci/symbols_cuda12.txt)"
     exit 1
 fi
 
