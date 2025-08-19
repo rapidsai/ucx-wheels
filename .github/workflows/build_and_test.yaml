@@ -78,15 +78,15 @@ jobs:
 
           export TEST_MATRIX="
           # amd64
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu20.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu20.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu20.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.0', LINUX_VER: 'ubuntu20.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.0', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
           # arm64
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.0', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.0', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
           "
 
           TEST_MATRIX="$(
@@ -150,6 +150,7 @@ jobs:
     needs: [compute-matrices, build]
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrices.outputs.TEST_MATRIX) }}
+      fail-fast: false
     runs-on: "linux-${{ matrix.ARCH }}-gpu-${{ matrix.gpu }}-${{ matrix.driver }}-1"
     container:
       image: "rapidsai/citestwheel:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PY_VER }}"
