@@ -15,12 +15,8 @@ python -m pip install "${WHEELHOUSE}/${package_name}_${RAPIDS_PY_CUDA_SUFFIX}"*.
 # Test basic library loading
 python -c "import libucx; libucx.load_library(); print('Loaded libucx libraries successfully!')"
 
-if [[ "${RAPIDS_CUDA_VERSION}" =~ ^12\..* ]]; then
-    REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda12.txt"
-else
-    echo "Error: Unsupported CUDA version ${RAPIDS_CUDA_VERSION}"
-    exit 1
-fi
+RAPIDS_CUDA_MAJOR="${RAPIDS_CUDA_VERSION%%.*}"
+REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda${RAPIDS_CUDA_MAJOR}.txt"
 
 rapids-logger "Test CUDA symbol checker"
 bash "${SCRIPT_DIR}/../utils/test_check_cuda_symbols.sh" "$REFERENCE_FILE"
