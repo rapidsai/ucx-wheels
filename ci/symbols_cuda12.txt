@@ -1,11 +1,17 @@
 cuCtxGetApiVersion
 cuCtxGetCurrent
 cuCtxGetDevice
+cuCtxGetId
+cuCtxPopCurrent_v2
+cuCtxPushCurrent_v2
 cuDeviceGet
 cuDeviceGetAttribute
 cuDeviceGetCount
 cuDeviceGetName
 cuDeviceGetUuid
+cuDevicePrimaryCtxGetState
+cuDevicePrimaryCtxRelease_v2
+cuDevicePrimaryCtxRetain
 cuDeviceTotalMem_v2
 cuEventCreate
 cuEventDestroy_v2
@@ -64,6 +70,7 @@ cudaDeviceSynchronize@libcudart.so.12
 cudaFree@libcudart.so.12
 cudaGetDeviceCount@libcudart.so.12
 cudaGetErrorString@libcudart.so.12
+cudaGetSymbolSize@libcudart.so.12
 cudaMalloc@libcudart.so.12
 cudaMallocManaged@libcudart.so.12
 cudaMemcpy@libcudart.so.12
