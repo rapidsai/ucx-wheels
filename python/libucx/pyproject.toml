@@ -4,7 +4,7 @@
 build-backend = "rapids_build_backend.build"
 requires = [
     "rapids-build-backend>=0.4.0,<0.5.0.dev0",
-    "setuptools>=64.0.0",
+    "setuptools>=77.0.0",
 ]
 
 [project]
