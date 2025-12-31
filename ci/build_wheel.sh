@@ -8,7 +8,7 @@ package_dir="python/libucx"
 source rapids-configure-sccache
 source rapids-date-string
 
-python -m pip wheel "${package_dir}"/ -w "${package_dir}"/dist -vvv --no-deps --disable-pip-version-check
+python -m pip wheel "${package_dir}"/ -w "${package_dir}"/dist -v --no-deps --disable-pip-version-check
 
 python -m auditwheel repair             \
     -w "${RAPIDS_WHEEL_BLD_OUTPUT_DIR}" \
