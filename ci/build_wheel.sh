@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2024-2025, NVIDIA CORPORATION.
+# Copyright (c) 2024-2026, NVIDIA CORPORATION.
 
 set -euo pipefail
 
@@ -19,3 +19,5 @@ python -m auditwheel repair             \
     --exclude "libucs.so.0"             \
     --exclude "libucp.so.0"             \
     ${package_dir}/dist/*
+
+ci/validate_wheel.sh "${package_dir}" "${RAPIDS_WHEEL_BLD_OUTPUT_DIR}"

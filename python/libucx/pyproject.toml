@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025, NVIDIA CORPORATION.
+# Copyright (c) 2024-2026, NVIDIA CORPORATION.
 
 [build-system]
 build-backend = "rapids_build_backend.build"
@@ -32,6 +32,14 @@ libucx = "libucx"
 
 [project.urls]
 Homepage = "https://github.com/openucx/ucx"
+
+[tool.pydistcheck]
+select = [
+    "distro-too-large-compressed",
+]
+
+# PyPI hard limit is 1GiB, but try to keep this as small as possible
+max_allowed_size_compressed = '50Mi'
 
 [tool.rapids-build-backend]
 build-backend = "setuptools.build_meta"
