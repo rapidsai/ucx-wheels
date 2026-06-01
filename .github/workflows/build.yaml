@@ -1,24 +1,25 @@
 name: build
-
 on:
   push:
     branches:
       - "main"
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
-
+permissions: {}
 jobs:
   version_changed:
     runs-on: ubuntu-latest
     name: Check if the version was bumped
     outputs:
       version_changed: ${{ steps.changed_files.outputs.version_changed }}
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Check VERSION file for changes
         id: changed_files
         run: |
@@ -33,8 +34,13 @@ jobs:
           echo "version_changed=${has_changes}" >> "$GITHUB_OUTPUT"
   build_and_test:
     needs: version_changed
-    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
     uses: ./.github/workflows/build_and_test.yaml
     with:
       build_type: branch
       publish_packages: ${{ needs.version_changed.outputs.version_changed }}
+    secrets:
+      nightly_wheel_token: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}

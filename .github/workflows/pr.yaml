@@ -1,18 +1,20 @@
 name: pr
-
 on:
   push:
     branches:
       - "pull-request/[0-9]+"
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
-
-
+permissions: {}
 jobs:
   build_and_test:
-    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
     uses: ./.github/workflows/build_and_test.yaml
     with:
       build_type: pull-request
+    secrets:
+      nightly_wheel_token: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}

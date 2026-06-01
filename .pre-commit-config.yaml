@@ -7,16 +7,16 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
   - repo: https://github.com/PyCQA/isort
-    rev: 7.0.0
+    rev: 9.0.0a3
     hooks:
       - id: isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.14
+    rev: v0.15.13
     hooks:
       - id: ruff-check
       - id: ruff-format
   - repo: https://github.com/rapidsai/pre-commit-hooks
-    rev: v1.3.3
+    rev: v1.4.3
     hooks:
       - id: verify-copyright
       - id: verify-pyproject-license
@@ -25,6 +25,10 @@ repos:
     hooks:
       - id: shellcheck
         args: ["--severity=warning"]
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.25.2
+    hooks:
+      - id: zizmor
 
 default_language_version:
   python: python3
