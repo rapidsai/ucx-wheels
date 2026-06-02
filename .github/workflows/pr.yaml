@@ -12,6 +12,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      id-token: write
       pull-requests: read
     uses: ./.github/workflows/build_and_test.yaml
     with:
