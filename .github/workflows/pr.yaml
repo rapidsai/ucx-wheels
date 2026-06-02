@@ -8,6 +8,15 @@ concurrency:
   cancel-in-progress: true
 permissions: {}
 jobs:
+  pr-builder:
+    needs:
+      - build_and_test
+    uses: rapidsai/shared-workflows/.github/workflows/pr-builder.yaml@main
+    permissions:
+      contents: read
+    if: always()
+    with:
+      needs: ${{ toJSON(needs) }}
   build_and_test:
     permissions:
       actions: read
