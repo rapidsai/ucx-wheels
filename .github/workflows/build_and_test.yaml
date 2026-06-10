@@ -63,10 +63,10 @@ jobs:
           export BUILD_MATRIX="
           # amd64
           - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.2.0', LINUX_VER: 'rockylinux8' }
           # arm64
           - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.2.0', LINUX_VER: 'rockylinux8' }
           "
 
           BUILD_MATRIX="$(
