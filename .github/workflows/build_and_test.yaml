@@ -205,4 +205,4 @@ jobs:
       env:
         RAPIDS_CONDA_TOKEN: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
       run: |
-        rapids-wheels-anaconda-github ucx cpp
+        rapids-download-from-github "$(rapids-artifact-name wheel_cpp libucx ucx --cuda "$RAPIDS_CUDA_VERSION")"
