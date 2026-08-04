@@ -50,6 +50,7 @@ cuMemSetAccess
 cuMemUnmap
 cuMemcpyAsync
 cuMemcpyDtoDAsync_v2
+cuMemcpyHtoD_v2
 cuPointerGetAttribute
 cuPointerGetAttributes
 cuPointerSetAttribute
