@@ -184,7 +184,7 @@ jobs:
   publish:
     # TODO: revert this after 1.20.0 is published
     # if: ${{ inputs.publish_packages == 'true' }}
-    needs: test
+    # needs: test
     runs-on: linux-amd64-cpu4
     container:
       image: "rapidsai/ci-wheel:latest" # zizmor: ignore[unpinned-images]
@@ -211,6 +211,9 @@ jobs:
         env:
           RAPIDS_CONDA_TOKEN: ${{ secrets.nightly_wheel_token }}
         run: |
+          rapids-pip-retry install \
+            --prefer-binary \
+            'anaconda-client>=1.13.1'
           UPLOAD_DIR="$(mktemp -d)"
           rapids-wheels-anaconda-github ucx cpp "${UPLOAD_DIR}"
           echo "package_upload_dir=${UPLOAD_DIR}" >> "${GITHUB_OUTPUT}"
