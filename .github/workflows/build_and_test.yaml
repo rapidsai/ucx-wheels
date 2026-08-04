@@ -13,6 +13,9 @@ on:
       nightly_wheel_token:
         required: true
         description: "API token for publishing to https://pypi.anaconda.org/rapidsai-wheels-nightly/simple/"
+      pypi-token:
+        required: false
+        description: "API token for publishing to pypi.org"
 
 permissions: {}
 
@@ -179,7 +182,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
   publish:
-    if: ${{ inputs.publish_packages == 'true' }}
+    # TODO: revert this after 1.20.0 is published
+    # if: ${{ inputs.publish_packages == 'true' }}
     needs: test
     runs-on: linux-amd64-cpu4
     container:
@@ -217,4 +221,4 @@ jobs:
           python3 -m twine upload -u __token__ "${UPLOAD_DIR}"/*
         env:
           UPLOAD_DIR: ${{ steps.download-wheels.outputs.package_upload_dir }}
-          TWINE_PASSWORD: ${{ secrets.RAPIDSAI_PYPI_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.pypi-token }}
