@@ -184,7 +184,7 @@ jobs:
   publish:
     # TODO: revert this after 1.20.0 is published
     # if: ${{ inputs.publish_packages == 'true' }}
-    # needs: test
+    needs: build
     runs-on: linux-amd64-cpu4
     container:
       image: "rapidsai/ci-wheel:latest" # zizmor: ignore[unpinned-images]
