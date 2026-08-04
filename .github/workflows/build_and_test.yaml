@@ -203,7 +203,18 @@ jobs:
       - name: Standardize repository information
         uses: rapidsai/shared-actions/rapids-github-info@main
       - name: Download wheels from artifact storage and publish to anaconda repository
+        id: download-wheels
         env:
           RAPIDS_CONDA_TOKEN: ${{ secrets.nightly_wheel_token }}
         run: |
-          rapids-wheels-anaconda-github ucx cpp
+          UPLOAD_DIR="$(mktemp -d)"
+          rapids-wheels-anaconda-github ucx cpp "${UPLOAD_DIR}"
+          echo "package_upload_dir=${UPLOAD_DIR}" >> "${GITHUB_OUTPUT}"
+      - name: Publish the downloaded wheels to PyPI
+        # zizmor: ignore[use-trusted-publishing]
+        run: |
+          python3 -m pip install 'twine>=6.2.0'
+          python3 -m twine upload -u __token__ "${UPLOAD_DIR}"/*
+        env:
+          UPLOAD_DIR: ${{ steps.download-wheels.outputs.package_upload_dir }}
+          TWINE_PASSWORD: ${{ secrets.RAPIDSAI_PYPI_TOKEN }}
