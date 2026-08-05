@@ -45,3 +45,4 @@ jobs:
       publish_packages: ${{ needs.version_changed.outputs.version_changed }}
     secrets:
       nightly_wheel_token: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
+      pypi-token: ${{ secrets.RAPIDSAI_PYPI_TOKEN }}
