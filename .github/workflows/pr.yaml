@@ -39,7 +39,6 @@ jobs:
     uses: ./.github/workflows/build_and_test.yaml
     with:
       build_type: pull-request
-      publish_packages: true
+      publish_packages: false
     secrets:
       nightly_wheel_token: ${{ secrets.CONDA_RAPIDSAI_WHEELS_NIGHTLY_TOKEN }}
-      pypi-token: ${{ secrets.RAPIDSAI_PYPI_TOKEN }}
