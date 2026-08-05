@@ -59,9 +59,13 @@ cuStreamDestroy_v2
 cuStreamSynchronize
 cudaDeviceSynchronize@libcudart.so.13
 cudaFree@libcudart.so.13
+cudaFreeHost@libcudart.so.13
 cudaGetDeviceCount@libcudart.so.13
 cudaGetErrorString@libcudart.so.13
+cudaGetLastError@libcudart.so.13
 cudaGetSymbolSize@libcudart.so.13
+cudaHostAlloc@libcudart.so.13
+cudaHostGetDevicePointer@libcudart.so.13
 cudaMalloc@libcudart.so.13
 cudaMallocManaged@libcudart.so.13
 cudaMemcpy@libcudart.so.13
