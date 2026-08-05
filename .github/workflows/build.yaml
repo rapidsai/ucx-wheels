@@ -20,6 +20,10 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # NOTE: 'VERSION.txt' (not 'VERSION') is used intentionally, to avoid
+      #       confusing RAPIDS-specific checks that attach some conventions to
+      #       a file named 'VERSION'.
+      #       ref: https://github.com/rapidsai/ucx-wheels/pull/46
       - name: Check VERSION.txt file for changes
         id: changed_files
         run: |
