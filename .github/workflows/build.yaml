@@ -20,10 +20,10 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Check VERSION file for changes
+      - name: Check VERSION.txt file for changes
         id: changed_files
         run: |
-          diff=$(git diff HEAD~ -- VERSION)
+          diff=$(git diff HEAD~ -- VERSION.txt)
           echo "The diff is ${diff}"
           if [ -n "$diff" ]; then
             has_changes='true'
