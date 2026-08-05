@@ -69,9 +69,14 @@ cudaMemset
 cudaSetDevice
 cudaDeviceSynchronize@libcudart.so.12
 cudaFree@libcudart.so.12
+cudaFreeHost@libcudart.so.12
 cudaGetDeviceCount@libcudart.so.12
 cudaGetErrorString@libcudart.so.12
+cudaGetLastError@libcudart.so.12
 cudaGetSymbolSize@libcudart.so.12
+cudaHostAlloc@libcudart.so.12
+cudaHostGetDevicePointer@libcudart.so.12
+cudaLaunchKernel@libcudart.so.12
 cudaMalloc@libcudart.so.12
 cudaMallocManaged@libcudart.so.12
 cudaMemcpy@libcudart.so.12
