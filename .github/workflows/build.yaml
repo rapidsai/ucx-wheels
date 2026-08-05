@@ -16,14 +16,18 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Check VERSION file for changes
+      # NOTE: 'VERSION.txt' (not 'VERSION') is used intentionally, to avoid
+      #       confusing RAPIDS-specific checks that attach some conventions to
+      #       a file named 'VERSION'.
+      #       ref: https://github.com/rapidsai/ucx-wheels/pull/46
+      - name: Check VERSION.txt file for changes
         id: changed_files
         run: |
-          diff=$(git diff HEAD~ -- VERSION)
+          diff=$(git diff HEAD~ -- VERSION.txt)
           echo "The diff is ${diff}"
           if [ -n "$diff" ]; then
             has_changes='true'

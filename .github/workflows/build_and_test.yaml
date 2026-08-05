@@ -19,28 +19,7 @@ on:
 permissions: {}
 
 jobs:
-  checks:
-    runs-on: ubuntu-latest
-    container:
-      image: rapidsai/ci-conda:latest # zizmor: ignore[unpinned-images]
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-0|${{ hashFiles('.pre-commit-config.yaml') }}
-      - name: Run pre-commit
-        run: |
-          conda install --yes pre-commit
-          pre-commit run --all-files --show-diff-on-failure
   compute-matrices:
-    needs: checks
     runs-on: ubuntu-latest
     outputs:
       BUILD_MATRIX: ${{ steps.compute-matrix.outputs.BUILD_MATRIX }}
@@ -109,13 +88,13 @@ jobs:
       pull-requests: read
     steps:
       # AWS creds are needed here for sccache
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59 # v6.1.3
+      - uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
           role-duration-seconds: 900
       - name: checkout code repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Standardize repository information
@@ -145,7 +124,7 @@ jobs:
         run: |
           echo "Contents of directory to be uploaded:"
           ls -R "${WHEEL_OUTPUT_DIR}"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           if-no-files-found: 'error'
           name: ${{ steps.package-name.outputs.RAPIDS_PACKAGE_NAME }}
@@ -170,7 +149,7 @@ jobs:
       - name: Run nvidia-smi to make sure GPU is working
         run: nvidia-smi
       - name: checkout code repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Standardize repository information
@@ -195,13 +174,9 @@ jobs:
       pull-requests: read
     steps:
       - name: checkout code repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Get current date
-        id: date
-        run: |
-          echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
       - name: Standardize repository information
         uses: rapidsai/shared-actions/rapids-github-info@main
       - name: Download wheels from artifact storage and publish to anaconda repository

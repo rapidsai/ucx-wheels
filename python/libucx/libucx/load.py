@@ -1,4 +1,4 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.
+# Copyright (c) 2024-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,9 +51,7 @@ def _load_wheel_installation(soname: str):
 
 def load_library():
     """Dynamically load UCX libraries"""
-    prefer_system_installation = (
-        os.getenv("RAPIDS_LIBUCX_PREFER_SYSTEM_LIBRARY", "false").lower() != "false"
-    )
+    prefer_system_installation = os.getenv("RAPIDS_LIBUCX_PREFER_SYSTEM_LIBRARY", "false").lower() != "false"
 
     libraries = []
     for lib in UCX_LIBRARIES:
