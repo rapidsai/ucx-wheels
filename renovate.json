@@ -8,7 +8,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^VERSION$"],
+      "fileMatch": ["^VERSION\.txt$"],
       "matchStrings": ["(?<currentValue>[^\\s]+)"],
       "depNameTemplate": "openucx/ucx",
       "datasourceTemplate": "github-tags",
