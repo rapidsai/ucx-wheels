@@ -71,8 +71,8 @@ jobs:
           - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'v100',       driver: 'earliest' }
           - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
           - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'ubuntu24.04', gpu: 'h100',       driver: 'latest'   }
-          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.0.3', LINUX_VER: 'ubuntu24.04', gpu: 'h100', driver: 'latest'   }
-          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'ubuntu24.04', gpu: 'rtxpro6000',       driver: 'latest'   }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.0.3', LINUX_VER: 'ubuntu24.04', gpu: 'h100',       driver: 'latest'   }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'ubuntu24.04', gpu: 'rtxpro6000', driver: 'latest'   }
           # arm64
           - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'l4',        driver: 'earliest' }
           - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100',      driver: 'earliest' }
