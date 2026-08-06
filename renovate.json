@@ -3,8 +3,21 @@
   "extends": [
     "config:recommended"
   ],
-  "minimumReleaseAge": "7 days",
-  "ignoreUnstable": true,
+  "packageRules": [
+    {
+      "description": "Wait for 7 days post-release before updating",
+      "matchPackageNames": [
+        "*"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Ignore alphas, release candidates, and other 'unstable' versions",
+      "matchPackageNames": [
+        "*"
+      ],
+      "ignoreUnstable": true
+    },
   "customManagers": [
     {
       "customType": "regex",
