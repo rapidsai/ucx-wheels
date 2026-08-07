@@ -36,13 +36,21 @@ jobs:
           #
           #     [ARCH, PY_VER, CUDA_VER, LINUX_VER, GPU, DRIVER]
           #
+
+          # why these combinations?
+          #
+          #  - latest Python (these wheels have only minimal Python code)
+          #  - 1 build per CUDA-major x CPU architecture
+          #  - use OS with oldest GLIBC we want to support
+          #  - build with the latest CTK to get latest build toolchain (e.g. NVCC)
+          #
           export BUILD_MATRIX="
           # amd64
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'rockylinux8' }
           # arm64
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'rockylinux8' }
           "
 
           BUILD_MATRIX="$(
@@ -52,17 +60,25 @@ jobs:
 
           echo "BUILD_MATRIX=${BUILD_MATRIX}" | tee --append "${GITHUB_OUTPUT}"
 
+          # why these CUDA versions?
+          #
+          #  - support 2 latest major versions
+          #  - test on endpoints (oldest and latest)
+          #  - test CUDA 12.2.2 (special case for RAPIDS because that's its CUDA 12 floor)
+          #
           export TEST_MATRIX="
           # amd64
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'l4',   driver: 'earliest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'earliest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'v100',       driver: 'earliest' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'ubuntu24.04', gpu: 'h100',       driver: 'latest'   }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.0.3', LINUX_VER: 'ubuntu24.04', gpu: 'h100',       driver: 'latest'   }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'ubuntu24.04', gpu: 'rtxpro6000', driver: 'latest'   }
           # arm64
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'earliest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'earliest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'ubuntu24.04', gpu: 'l4',         driver: 'latest'   }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '13.0.3', LINUX_VER: 'ubuntu24.04', gpu: 'l4',         driver: 'latest'   }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'ubuntu24.04', gpu: 'l4',         driver: 'latest'   }
           "
 
           TEST_MATRIX="$(
