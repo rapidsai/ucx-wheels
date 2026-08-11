@@ -26,7 +26,7 @@
       "depNameTemplate": "openucx/ucx",
       "datasourceTemplate": "github-tags",
       "extractVersionTemplate": "^v(?<version>.+)$",
-      "versioningTemplate": "semver"
+      "versioningTemplate": "pep440"
     }
   ]
 }
