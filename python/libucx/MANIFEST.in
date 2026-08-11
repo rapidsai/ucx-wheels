@@ -1,2 +1,2 @@
-include VERSION.txt
-include libucx/VERSION.txt
+include UCX_VERSION.txt
+include libucx/UCX_VERSION.txt

@@ -14,7 +14,7 @@
 
 import importlib.resources
 
-__version__ = importlib.resources.files(__package__).joinpath("VERSION.txt").read_text().strip()
+__version__ = importlib.resources.files(__package__).joinpath("UCX_VERSION.txt").read_text().strip()
 try:
     __git_commit__ = importlib.resources.files(__package__).joinpath("GIT_COMMIT").read_text().strip()
 except FileNotFoundError:

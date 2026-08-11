@@ -20,14 +20,14 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      # NOTE: 'VERSION.txt' (not 'VERSION') is used intentionally, to avoid
+      # NOTE: 'UCX_VERSION.txt' (not 'VERSION') is used intentionally, to avoid
       #       confusing RAPIDS-specific checks that attach some conventions to
       #       a file named 'VERSION'.
       #       ref: https://github.com/rapidsai/ucx-wheels/pull/46
-      - name: Check VERSION.txt file for changes
+      - name: Check UCX_VERSION.txt file for changes
         id: changed_files
         run: |
-          diff=$(git diff HEAD~ -- VERSION.txt)
+          diff=$(git diff HEAD~ -- UCX_VERSION.txt)
           echo "The diff is ${diff}"
           if [ -n "$diff" ]; then
             has_changes='true'

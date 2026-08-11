@@ -25,7 +25,7 @@ class build_py(build_orig):
     def run(self):
         super().run()
 
-        with open("VERSION.txt") as f:
+        with open("UCX_VERSION.txt") as f:
             package_version = f.read().strip()
 
         # strip off any other non-UCX version components, like ".post1"
