@@ -56,4 +56,4 @@ requires = [
 include-package-data = true
 
 [tool.setuptools.dynamic]
-version = {file = "UCX_VERSION.txt"}
+version = {file = "UCX_WHEEL_VERSION.txt"}
