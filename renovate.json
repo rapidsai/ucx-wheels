@@ -21,7 +21,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^VERSION\\.txt$"],
+      "fileMatch": ["^UCX_WHEEL_VERSION\\.txt$"],
       "matchStrings": ["(?<currentValue>[^\\s]+)"],
       "depNameTemplate": "openucx/ucx",
       "datasourceTemplate": "github-tags",
