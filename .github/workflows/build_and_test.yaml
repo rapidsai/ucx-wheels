@@ -6,39 +6,20 @@ on:
         required: true
         type: string
       publish_packages:
-        required: false
-        default: 'false'
-        type: string
+        required: true
+        type: boolean
     secrets:
       nightly_wheel_token:
         required: true
         description: "API token for publishing to https://pypi.anaconda.org/rapidsai-wheels-nightly/simple/"
+      pypi-token:
+        required: false
+        description: "API token for publishing to pypi.org"
 
 permissions: {}
 
 jobs:
-  checks:
-    runs-on: ubuntu-latest
-    container:
-      image: rapidsai/ci-conda:latest # zizmor: ignore[unpinned-images]
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-0|${{ hashFiles('.pre-commit-config.yaml') }}
-      - name: Run pre-commit
-        run: |
-          conda install --yes pre-commit
-          pre-commit run --all-files --show-diff-on-failure
   compute-matrices:
-    needs: checks
     runs-on: ubuntu-latest
     outputs:
       BUILD_MATRIX: ${{ steps.compute-matrix.outputs.BUILD_MATRIX }}
@@ -55,13 +36,21 @@ jobs:
           #
           #     [ARCH, PY_VER, CUDA_VER, LINUX_VER, GPU, DRIVER]
           #
+
+          # why these combinations?
+          #
+          #  - latest Python (these wheels have only minimal Python code)
+          #  - 1 build per CUDA-major x CPU architecture
+          #  - use OS with oldest GLIBC we want to support
+          #  - build with the latest CTK to get latest build toolchain (e.g. NVCC)
+          #
           export BUILD_MATRIX="
           # amd64
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'rockylinux8' }
           # arm64
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'rockylinux8' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'rockylinux8' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'rockylinux8' }
           "
 
           BUILD_MATRIX="$(
@@ -71,17 +60,25 @@ jobs:
 
           echo "BUILD_MATRIX=${BUILD_MATRIX}" | tee --append "${GITHUB_OUTPUT}"
 
+          # why these CUDA versions?
+          #
+          #  - support 2 latest major versions
+          #  - test on endpoints (oldest and latest)
+          #  - test CUDA 12.2.2 (special case for RAPIDS because that's its CUDA 12 floor)
+          #
           export TEST_MATRIX="
           # amd64
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'l4',   driver: 'earliest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'earliest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'amd64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'v100',       driver: 'earliest' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'ubuntu24.04', gpu: 'h100',       driver: 'latest'   }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.0.3', LINUX_VER: 'ubuntu24.04', gpu: 'h100',       driver: 'latest'   }
+          - { ARCH: 'amd64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'ubuntu24.04', gpu: 'rtxpro6000', driver: 'latest'   }
           # arm64
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'earliest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100', driver: 'earliest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.9.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
-          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '13.0.1', LINUX_VER: 'ubuntu24.04', gpu: 'a100', driver: 'latest' }
+          - { ARCH: 'arm64', PY_VER: '3.13', CUDA_VER: '12.0.1', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.2.2', LINUX_VER: 'ubuntu22.04', gpu: 'a100',       driver: 'earliest' }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '12.9.2', LINUX_VER: 'ubuntu24.04', gpu: 'l4',         driver: 'latest'   }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '13.0.3', LINUX_VER: 'ubuntu24.04', gpu: 'l4',         driver: 'latest'   }
+          - { ARCH: 'arm64', PY_VER: '3.14', CUDA_VER: '13.3.0', LINUX_VER: 'ubuntu24.04', gpu: 'l4',         driver: 'latest'   }
           "
 
           TEST_MATRIX="$(
@@ -107,13 +104,13 @@ jobs:
       pull-requests: read
     steps:
       # AWS creds are needed here for sccache
-      - uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59 # v6.1.3
+      - uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
           role-duration-seconds: 900
       - name: checkout code repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Standardize repository information
@@ -143,7 +140,7 @@ jobs:
         run: |
           echo "Contents of directory to be uploaded:"
           ls -R "${WHEEL_OUTPUT_DIR}"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           if-no-files-found: 'error'
           name: ${{ steps.package-name.outputs.RAPIDS_PACKAGE_NAME }}
@@ -168,7 +165,7 @@ jobs:
       - name: Run nvidia-smi to make sure GPU is working
         run: nvidia-smi
       - name: checkout code repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Standardize repository information
@@ -179,7 +176,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
   publish:
-    if: ${{ inputs.publish_packages == 'true' }}
+    if: ${{ inputs.publish_packages }}
     needs: test
     runs-on: linux-amd64-cpu4
     container:
@@ -193,17 +190,27 @@ jobs:
       pull-requests: read
     steps:
       - name: checkout code repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Get current date
-        id: date
-        run: |
-          echo "CURRENT_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
       - name: Standardize repository information
         uses: rapidsai/shared-actions/rapids-github-info@main
       - name: Download wheels from artifact storage and publish to anaconda repository
+        id: download-wheels
         env:
           RAPIDS_CONDA_TOKEN: ${{ secrets.nightly_wheel_token }}
         run: |
-          rapids-wheels-anaconda-github ucx cpp
+          rapids-pip-retry install \
+            --prefer-binary \
+            'anaconda-client>=1.13.1'
+          UPLOAD_DIR="$(mktemp -d)"
+          rapids-wheels-anaconda-github ucx cpp "${UPLOAD_DIR}"
+          echo "package_upload_dir=${UPLOAD_DIR}" >> "${GITHUB_OUTPUT}"
+      - name: Publish the downloaded wheels to PyPI
+        # zizmor: ignore[use-trusted-publishing]
+        run: |
+          python3 -m pip install 'twine>=6.2.0'
+          python3 -m twine upload -u __token__ "${UPLOAD_DIR}"/*
+        env:
+          UPLOAD_DIR: ${{ steps.download-wheels.outputs.package_upload_dir }}
+          TWINE_PASSWORD: ${{ secrets.pypi-token }}

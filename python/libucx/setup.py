@@ -1,3 +1,5 @@
+# Copyright (c) 2024-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
 import glob
 import os
 import subprocess
@@ -23,7 +25,7 @@ class build_py(build_orig):
     def run(self):
         super().run()
 
-        with open("VERSION") as f:
+        with open("UCX_WHEEL_VERSION.txt") as f:
             package_version = f.read().strip()
 
         # strip off any other non-UCX version components, like ".post1"
@@ -42,10 +44,11 @@ class build_py(build_orig):
                         f"{ucx_tag}",
                         "https://github.com/openucx/ucx.git",
                         "ucx",
-                    ]
+                    ],
+                    check=True,
                 )
                 with chdir("ucx"):
-                    subprocess.run(["./autogen.sh"])
+                    subprocess.run(["./autogen.sh"], check=True)
                     subprocess.run(
                         [
                             "./contrib/configure-release",
@@ -58,13 +61,15 @@ class build_py(build_orig):
                             "--without-verbs",
                             "--without-rdmacm",
                             "--with-cuda=/usr/local/cuda",
-                        ]
+                        ],
+                        check=True,
                     )
                     subprocess.run(
                         ["make", "-j"],
+                        check=True,
                         env={**os.environ, "CPPFLAGS": "-I/usr/local/cuda/include"},
                     )
-                    subprocess.run(["make", "install"])
+                    subprocess.run(["make", "install"], check=True)
                     # The config file built into UCX is not relocatable. We need to fix
                     # that so that we can package up UCX and distribute it in a wheel.
                     # This was fixed in
@@ -77,7 +82,8 @@ class build_py(build_orig):
                             "-i",
                             r"s/^set(prefix.*/set(prefix \"${CMAKE_CURRENT_LIST_DIR}\/..\/..\/..\")/",
                             f"{install_prefix}/lib/cmake/ucx/ucx-targets.cmake",
-                        ]
+                        ],
+                        check=True,
                     )
                     # The UCX libraries must be able to find each other as dependencies.
                     for fn in glob.glob(f"{install_prefix}/lib/*.so*"):
@@ -88,7 +94,8 @@ class build_py(build_orig):
                                 "$ORIGIN",
                                 "--force-rpath",
                                 fn,
-                            ]
+                            ],
+                            check=True,
                         )
                     # The transport layers must be able to find the main UCX. Note that
                     # this is not strictly necessary because the layers should only ever
@@ -103,7 +110,8 @@ class build_py(build_orig):
                                 "$ORIGIN/..",
                                 "--force-rpath",
                                 fn,
-                            ]
+                            ],
+                            check=True,
                         )
 
 

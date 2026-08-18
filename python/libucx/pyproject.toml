@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2026, NVIDIA CORPORATION.
+# Copyright (c) 2024-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 [build-system]
 build-backend = "rapids_build_backend.build"
@@ -56,4 +56,4 @@ requires = [
 include-package-data = true
 
 [tool.setuptools.dynamic]
-version = {file = "VERSION"}
+version = {file = "UCX_WHEEL_VERSION.txt"}

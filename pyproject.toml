@@ -1,0 +1,10 @@
+# Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+ignore = [
+    # (flake8-simplify) Use a single `with` statement with multiple contexts instead of nested `with` statements
+    "SIM117"
+]

@@ -6,7 +6,6 @@ set -euo pipefail
 package_dir="python/libucx"
 
 source rapids-configure-sccache
-source rapids-date-string
 
 python -m pip wheel "${package_dir}"/ -w "${package_dir}"/dist -v --no-deps --disable-pip-version-check
 
