@@ -17,7 +17,8 @@
         "*"
       ],
       "ignoreUnstable": true
-    },
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
