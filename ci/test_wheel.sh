@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2024-2025, NVIDIA CORPORATION.
+# Copyright (c) 2024-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ WHEELHOUSE=$(RAPIDS_PY_WHEEL_NAME="ucx_${RAPIDS_PY_CUDA_SUFFIX}" rapids-download
 python -m pip install "${WHEELHOUSE}/${package_name}_${RAPIDS_PY_CUDA_SUFFIX}"*.whl
 
 # Test basic library loading
-python -c "import libucx; libucx.load_library(); print('Loaded libucx libraries successfully!')"
+python -c "import libucx; assert all(libucx.load_library()); print('Loaded libucx libraries successfully!')"
 
 RAPIDS_CUDA_MAJOR="${RAPIDS_CUDA_VERSION%%.*}"
 REFERENCE_FILE="${SCRIPT_DIR}/symbols_cuda${RAPIDS_CUDA_MAJOR}.txt"
