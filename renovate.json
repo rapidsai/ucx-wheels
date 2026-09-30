@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Wait for 7 days post-release before updating",
+      "matchPackageNames": [
+        "*"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Ignore alphas, release candidates, and other 'unstable' versions",
+      "matchPackageNames": [
+        "*"
+      ],
+      "ignoreUnstable": true
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^UCX_WHEEL_VERSION\\.txt$"],
+      "matchStrings": ["(?<currentValue>[^\\s]+)"],
+      "depNameTemplate": "openucx/ucx",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>.+)$",
+      "versioningTemplate": "pep440"
+    }
+  ]
+}
