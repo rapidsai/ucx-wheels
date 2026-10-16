@@ -3,6 +3,10 @@
   "extends": [
     "config:recommended"
   ],
+  "enabledManagers": [
+    "github-actions",
+    "regex"
+  ],
   "packageRules": [
     {
       "description": "Wait for 7 days post-release before updating",
@@ -17,6 +21,20 @@
         "*"
       ],
       "ignoreUnstable": true
+    },
+    {
+      "description": "Group all GitHub Actions updates into a single PR",
+      "matchManager": [
+        "github-actions"
+      ],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "Keep UCX version updates in their own PR",
+      "matchPackageNames": [
+        "openucx/ucx"
+      ],
+      "groupName": "ucx"
     }
   ],
   "customManagers": [
