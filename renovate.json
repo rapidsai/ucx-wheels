@@ -24,7 +24,7 @@
     },
     {
       "description": "Group all GitHub Actions updates into a single PR",
-      "matchManager": [
+      "matchManagers": [
         "github-actions"
       ],
       "groupName": "github-actions"
